@@ -1,14 +1,6 @@
-//so we want to create a tic tac toe game
-//A tic tac toe has nine boxes in which 2 players use X and O symbols to play the game.
-//to win a player has to get his symbol 3 times together diagonally horizontally or vertically
-
-//for starting we will create our game in console and for that we need 2d structure which has 3 columns and 3 rows
-
-// we will create a Game board factory function which will have  a gameboard array in which we will store the rows and columns of the board
-// we will create a players object which will have players info and their symbol
-
 const GameBoard = (function () {
   const gameBoard = [];
+  const winnerContainer = document.querySelector(".winnerContainer");
 
   function Cell() {
     let symbol = "";
@@ -19,67 +11,88 @@ const GameBoard = (function () {
   const players = {
     player1: {
       symbol: "X",
+      player: "player1",
     },
     player2: {
       symbol: "O",
+      player: "player2",
     },
   };
-  //this function will check if a row has same symbol or a column has all same symbols or if diagonals have same symbol
-  const checkIfSomeoneWon = function (gameBoard) {
-    let someBodyWon = false;
-    // console.log(gameBoard.length);
-    // for (let i = 0; i < gameBoard.length; i++) {
-    //     for (let j = 0; j < gameBoard[i].length; j++) {
 
-    //     }
-    // }
+  //this function will check if a row has same symbol or a column has all same symbols or if diagonals have same symbol
+  const checkIfSomeoneWon = function (player) {
+    let someBodyWon = false;
+    console.log(gameBoard);
 
     if (
+      //this checks if all the cells have same symbol and that the cells are not empty
       //row check
-      (gameBoard[0][1] === gameBoard[0][2] &&
-        gameBoard[0][2] === gameBoard[0][0]) ||
-      (gameBoard[1][1] === gameBoard[1][2] &&
-        gameBoard[1][2] === gameBoard[1][0]) ||
-      (gameBoard[2][1] === gameBoard[2][2] &&
-        gameBoard[2][2] === gameBoard[2][0]) ||
+      (gameBoard[0][1].symbol === gameBoard[0][2].symbol &&
+        gameBoard[0][2].symbol === gameBoard[0][0].symbol &&
+        gameBoard[0][0].symbol) ||
+      (gameBoard[1][1].symbol === gameBoard[1][2].symbol &&
+        gameBoard[1][2].symbol === gameBoard[1][0].symbol &&
+        gameBoard[1][0].symbol) ||
+      (gameBoard[2][1].symbol === gameBoard[2][2].symbol &&
+        gameBoard[2][2].symbol === gameBoard[2][0].symbol &&
+        gameBoard[2][0].symbol) ||
       //column check
-      (gameBoard[0][0] === gameBoard[1][0] &&
-        gameBoard[1][0] === gameBoard[2][0]) ||
-      (gameBoard[0][1] === gameBoard[1][1] &&
-        gameBoard[1][1] === gameBoard[2][1]) ||
-      (gameBoard[0][2] === gameBoard[1][2] &&
-        gameBoard[1][2] === gameBoard[2][2]) ||
+      (gameBoard[0][0].symbol === gameBoard[1][0].symbol &&
+        gameBoard[1][0].symbol === gameBoard[2][0].symbol &&
+        gameBoard[2][0].symbol) ||
+      (gameBoard[0][1].symbol === gameBoard[1][1].symbol &&
+        gameBoard[1][1].symbol === gameBoard[2][1].symbol &&
+        gameBoard[2][1].symbol) ||
+      (gameBoard[0][2].symbol === gameBoard[1][2].symbol &&
+        gameBoard[1][2].symbol === gameBoard[2][2].symbol &&
+        gameBoard[2][2].symbol) ||
       //diagonal check
-      (gameBoard[0][0] === gameBoard[1][1] &&
-        gameBoard[1][1] === gameBoard[2][2]) ||
-      (gameBoard[0][2] === gameBoard[1][1] &&
-        gameBoard[1][1] === gameBoard[2][0])
+      (gameBoard[0][0].symbol === gameBoard[1][1].symbol &&
+        gameBoard[1][1].symbol === gameBoard[2][2].symbol &&
+        gameBoard[2][2].symbol) ||
+      (gameBoard[0][2].symbol === gameBoard[1][1].symbol &&
+        gameBoard[1][1].symbol === gameBoard[2][0].symbol &&
+        gameBoard[2][0].symbol)
     ) {
       someBodyWon = true;
+      displayWinner(player);
     }
 
     console.log(someBodyWon);
   };
+  const displayWinner = function (player) {
+    winnerContainer.textContent = `${player} Wins!`;
+  };
 
-  //for starting we will fill all the columns with random symbol and then will check if anybody won and to do that we will have to check if a row has same symbol or a column has all same symbols or if diagonals have same symbol and we will do that by running a for loop for all the cells
-
-  //   const playRound = function () {
-  //     for (let i = 0; i < 9; i++) {}
-
-  //     console.log(randomSymbol);
-  //   };
+  let activePlayer = players.player1;
+  const playRound = function (cell) {
+    cell.textContent = activePlayer.symbol;
+    gameBoard[cell.dataset.i][cell.dataset.j].symbol = activePlayer.symbol;
+    console.log(gameBoard[cell.dataset.i][cell.dataset.j].symbol);
+    checkIfSomeoneWon(activePlayer.player);
+    activePlayer =
+      activePlayer === players.player1 ? players.player2 : players.player1;
+  };
 
   const createGameBoard = (function () {
     for (let i = 0; i < 3; i++) {
       gameBoard[i] = [];
       for (let j = 0; j < 3; j++) {
-        let randomSymbol = Math.floor(Math.random() * 10) % 2 ? "X" : "O";
-        gameBoard[i].push(randomSymbol);
-        // gameBoard[i].push(Cell());
+        // let randomSymbol = Math.floor(Math.random() * 10) % 2 ? "X" : "O";
+        // gameBoard[i].push(randomSymbol);
+        gameBoard[i].push(Cell());
       }
     }
-    checkIfSomeoneWon(gameBoard);
+    // checkIfSomeoneWon(gameBoard);
   })();
+
+  //events
+  const cells = document.querySelectorAll(".cell");
+  cells.forEach((cell) => {
+    cell.addEventListener("click", (e) => {
+      playRound(cell);
+    });
+  });
 
   return { gameBoard };
 })();
